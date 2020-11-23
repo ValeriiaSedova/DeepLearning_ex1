@@ -5,26 +5,21 @@ class FullyConnected:
     def __init__(self, input_size, output_size):
         self.input_size = input_size
         self.output_size = output_size
-        #maybe +1 somewhere
-        self.weights = np.random.random([self.input_size,self.output_size])
+        self.weights = np.random.random([self.input_size + 1, self.output_size])
+        self._optimizer = None
 
     def forward(self, input_tensor):
-        input_tensor = input_tensor.T
-        print('FORWARD:',self.weights.T.shape, input_tensor.shape)
-        return np.dot(self.weights.T, input_tensor).T
+        height, width = input_tensor.shape
+        self.input_tensor = np.concatenate((input_tensor, np.ones([height, 1])), axis = 1)
+        y_hat = np.dot(self.input_tensor, self.weights)
+        return y_hat 
 
     def backward(self, error_tensor):
-        self.error_tensor = error_tensor.T
-        self.gradient_weights = np.dot(self.weights, self.error_tensor).T
-        return  self.gradient_weights #maybe save it as an attribute later on
-
-    @property
-    def gradient_weights(self):
-        return self._gradient_weights
-
-    @gradient_weights.setter
-    def gradient_weights(self, gradient_weights):
-        self._gradient_weights = gradient_weights
+        error_tensor_new = np.dot( error_tensor, self.weights[:-1,:].T)
+        if self._optimizer != None: 
+            self.gradient = np.dot(self.input_tensor.T, error_tensor)
+            self.weights = self._optimizer.calculate_update(self.weights, self.gradient)        
+        return error_tensor_new
 
     @property
     def optimizer(self):
