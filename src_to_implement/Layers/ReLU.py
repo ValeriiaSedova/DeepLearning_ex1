@@ -16,7 +16,7 @@ class ReLU:
             tensor[tensor > 0] = 1
             tensor[tensor <= 0] = 0
             return tensor
-        self.gradient = np.dot(self.input_tensor.T, error_tensor)
+        # gradient = np.dot(self.input_tensor.T, error_tensor)
         dydx = relu_grad(self.output_tensor)
 
 

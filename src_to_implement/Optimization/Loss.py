@@ -1,4 +1,5 @@
 import numpy as np
+from time import sleep
 
 class CrossEntropyLoss:
 
@@ -7,7 +8,9 @@ class CrossEntropyLoss:
 
     def forward(self, input_tensor, label_tensor):
         self.input_tensor = input_tensor
-        self.loss = - np.log(input_tensor + np.finfo(float).eps)
+        loc = input_tensor[label_tensor == 1]
+
+        self.loss = - np.log(loc + np.finfo(float).eps)
         self.loss = self.loss.sum()
         return self.loss
 
